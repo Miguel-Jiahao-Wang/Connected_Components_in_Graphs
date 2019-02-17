@@ -1,9 +1,8 @@
-#We shouldn't assume that edges are from small to big, since we are building ids from an external dataset
-0, (0,1)
-1, (1,0)
-2, (5,2)
-3, (3,4)
-3, (6,3)
-3, (3,7)
-5, (8,5)
-7, (7,8)
+0 1
+1 2
+2 5
+3 4
+3 6
+3 7
+5 8
+7 8
