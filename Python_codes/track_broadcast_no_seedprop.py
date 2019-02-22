@@ -84,12 +84,19 @@ def Cracker(G):
     #Seeds_persisted = Seeds.keys().persist()
 
     #T_prop = Seed_Propragation(T_persisted, Seeds_persisted)
+    
+    
     T_prop = Seed_Propragation(T, Seeds.keys())
 
     return T_prop
 
 #-----------Function call-----------------
 init = time.time()
+
+data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_5MB.txt")
+G = data_raw.map(lambda x: x.split(',')).map(lambda x: (x[0], x[1])).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: set(x))
+
+
 #Cracker with findSeeds
 T_prop = Cracker(G)
 T_prop.collect()

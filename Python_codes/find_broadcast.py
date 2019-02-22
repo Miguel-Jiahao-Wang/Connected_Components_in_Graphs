@@ -78,6 +78,12 @@ def Cracker(G):
 #-----------Function call-----------------
 
 init = time.time()
+
+
+data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_10MB_1.txt")
+G = data_raw.map(lambda x: x.split(',')).map(lambda x: (x[0], x[1])).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: set(x))
+
+
 #Cracker with findSeeds
 T_prop = Cracker(G)
 T_prop.collect()

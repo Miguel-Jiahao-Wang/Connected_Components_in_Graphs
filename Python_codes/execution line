@@ -1,1 +1,20 @@
-PYTHONSTARTUP=filename pyspark
+PYTHONSTARTUP=find_broadcast.py pyspark
+
+
+wget https://www.dropbox.com/s/pgtbjaytftzj8o8/GRAF_10MB_1.txt
+
+wget https://www.dropbox.com/s/zt4imtq5h3j9h4p/GRAF_10MB_2.txt
+
+wget https://www.dropbox.com/s/omgons76vv20z95/GRAF_10MB_3.txt
+
+wget https://www.dropbox.com/s/1703k56sc8w2x8a/GRAF_5MB.txt
+
+wget https://www.dropbox.com/s/3iq2d3o66ojgfpw/GRAF_46MB.txt
+
+wget https://www.dropbox.com/s/iupgb40o75hgqo0/GRAF_256MB.txt
+
+hdfs dfs -mkdir /user/hadoop/wc
+
+hdfs dfs -mkdir /user/hadoop/wc/input
+
+hdfs dfs -put GRAF_10MB_1.txt /user/hadoop/wc/input
