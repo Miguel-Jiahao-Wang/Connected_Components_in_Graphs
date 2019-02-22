@@ -16,7 +16,7 @@ def Min_Selection_Step(G): #dictionary format RDD
 def Pruning_Step(H, T):
     #H = H.cache()
     #minimum node of the neighborhood: shared for following parts
-    v_min = H.map(lambda x: (x[0], min(x[1])))
+    v_min = H.mapValues(lambda x: min(x))
     v_min_bc = sc.broadcast(dict(v_min.collect())) #Broadcasting v_min
 
     #---------------G construction-------------------
