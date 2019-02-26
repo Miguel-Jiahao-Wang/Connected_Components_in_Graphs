@@ -1,0 +1,3 @@
+twitter, 6GB, http://an.kaist.ac.kr/~haewoon/release/twitter_social_graph/twitter_rv.tar.gz 
+
+wiki, ?MB ,https://snap.stanford.edu/data/wiki-Talk.txt.gz
