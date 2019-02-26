@@ -16,7 +16,7 @@ def Min_Selection_Step(G): #dictionary format RDD
 def Pruning_Step(H, T):
     #H = H.cache()
     #minimum node of the neighborhood: shared for following parts
-    v_min = H.mapValues(lambda x: min(x[1]))
+    v_min = H.mapValues(lambda x: min(x))
     #v_min_bc = sc.broadcast(dict(v_min.collect())) #Broadcasting v_min
 
     #---------------G construction-------------------
@@ -66,20 +66,24 @@ def Cracker(G):
         n += 1
         H = Min_Selection_Step(G)
         G, T = Pruning_Step(H, T)
-        Seeds = findSeeds(T)
+    Seeds = findSeeds(T)
     #T_persisted = T.persist()
     #Seeds_persisted = Seeds.keys().persist()
 
     #T_prop = Seed_Propragation(T_persisted, Seeds_persisted)
-    T_prop = Seed_Propragation(T, Seeds)
+    #T_prop = Seed_Propragation(T, Seeds)
 
-    return T_prop
+    return Seeds.count()
 
 #-----------Function call-----------------
 init = time.time()
-#Cracker with findSeeds
+
+data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_2MB_int.txt")
+G = data_raw.map(lambda x: x.split(',')).map(lambda x: (int(x[0]), int(x[1]))).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: set(x))
+
 T_prop = Cracker(G)
-T_prop.collect()
+print("Number of CCs", T_prop)
+#Cracker with findSeeds
 
 end = time.time()
 print("Time employed: %f" % (end - init))

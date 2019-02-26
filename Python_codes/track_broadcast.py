@@ -86,20 +86,20 @@ def Cracker(G):
     #T_prop = Seed_Propragation(T_persisted, Seeds_persisted)
     
     
-    T_prop = Seed_Propragation(T, Seeds.keys())
+    #T_prop = Seed_Propragation(T, Seeds.keys())
 
-    return T_prop
+    return Seeds.count()
 
 #-----------Function call-----------------
 init = time.time()
 
-data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_5MB.txt")
-G = data_raw.map(lambda x: x.split(',')).map(lambda x: (x[0], x[1])).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: set(x))
+data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_120MB_int.txt")
+G = data_raw.map(lambda x: x.split(',')).map(lambda x: (int(x[0]), int(x[1]))).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: set(x))
 
 
 #Cracker with findSeeds
 T_prop = Cracker(G)
-T_prop.collect()
+T_prop
 
 end = time.time()
 print("Time employed: %f" % (end - init))

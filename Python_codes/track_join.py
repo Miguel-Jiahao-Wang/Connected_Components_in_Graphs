@@ -84,16 +84,16 @@ def Cracker(G):
     #Seeds_persisted = Seeds.keys().persist()
 
     #T_prop = Seed_Propragation(T_persisted, Seeds_persisted)
-    T_prop = Seed_Propragation(T, Seeds.keys())
+    #T_prop = Seed_Propragation(T, Seeds.keys())
 
-    return T_prop
+    return Seeds.count()
 
 #-----------Function call-----------------
 
 init = time.time()
 #Cracker with findSeeds
 T_prop = Cracker(G)
-T_prop.collect()
+print("Number of CCs", T_prop)
 
 end = time.time()
 print("Time employed: %f" % (end - init))

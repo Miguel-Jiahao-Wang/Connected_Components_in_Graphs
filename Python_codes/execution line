@@ -1,4 +1,4 @@
-PYTHONSTARTUP=find_broadcast.py pyspark
+PYTHONSTARTUP=track_broadcast.py pyspark
 
 
 wget https://www.dropbox.com/s/pgtbjaytftzj8o8/GRAF_10MB_1.txt
@@ -13,8 +13,22 @@ wget https://www.dropbox.com/s/3iq2d3o66ojgfpw/GRAF_46MB.txt
 
 wget https://www.dropbox.com/s/iupgb40o75hgqo0/GRAF_256MB.txt
 
+wget https://www.dropbox.com/s/8b1kegn59gbd5ao/GRAF_1GB.txt
+
 hdfs dfs -mkdir /user/hadoop/wc
 
 hdfs dfs -mkdir /user/hadoop/wc/input
 
-hdfs dfs -put GRAF_10MB_1.txt /user/hadoop/wc/input
+hdfs dfs -put GRAF_5MB_int.txt /user/hadoop/wc/input
+hdfs dfs -rm GRAF_2MB_int.txt /user/hadoop/wc/input
+
+
+wget https://www.dropbox.com/s/umodmobl1xhz650/GRAF_120MB_int.txt
+
+wget https://www.dropbox.com/s/xno6e1uqbwt5vvy/GRAF_50MB_int.txt
+
+wget https://www.dropbox.com/s/6f49tpvr0qe7e4y/GRAF_10MB_int.txt
+
+wget https://www.dropbox.com/s/kert469qinsfuhn/GRAF_5MB_int.txt
+
+wget https://www.dropbox.com/s/97kl76gm6dm0r65/GRAF_2MB_int.txt
