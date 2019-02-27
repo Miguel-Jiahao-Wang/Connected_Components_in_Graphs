@@ -59,15 +59,19 @@ def set_join(value):
         return value[0][0] | value[1][0]
 
 #-------------Seed propagation-----------
-def Seed_Propragation(T, seed):
-    seed = seed.map(lambda x: (x, x))
-    T_seed = sc.parallelize([(-1, (None, -1))])
 
-    while T_seed.values().lookup(None):
-        T_seed = seed.rightOuterJoin(T)
-        seed = T_seed.map(lambda x: (x[1][1], x[1][0])).union(seed)
-
-    return T_seed
+def Seed_Propragation_lite(T, Seeds):
+    
+    seed = Seeds.map(lambda x:(x, None))
+    needProp = T.subtractByKey(seed)    
+    noProp = T.join(seed).map(lambda x: (x[1][0], x[0]))
+    T_prop = noProp
+    while needProp.take(1):
+        noProp = needProp.leftOuterJoin(noProp).values().filter(lambda x: x[1] is not None)
+        needProp = needProp.map(lambda x: (x[1], x[0])).subtractByKey(noProp).map(lambda x: (x[1], x[0]))
+        T_prop = T_prop.union(noProp)
+    
+    return T_prop
 
 #-----------------------------Main------------------------
 def Cracker(G):
@@ -88,18 +92,24 @@ def Cracker(G):
     
     #T_prop = Seed_Propragation(T, Seeds.keys())
 
-    return Seeds.count()
+    return [T, Seeds.keys()]
 
 #-----------Function call-----------------
 init = time.time()
-
-data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_120MB_int.txt")
+data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_2MB_int.txt")
 G = data_raw.map(lambda x: x.split(',')).map(lambda x: (int(x[0]), int(x[1]))).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: set(x))
 
 
 #Cracker with findSeeds
-T_prop = Cracker(G)
-T_prop
+T, Seeds = Cracker(G)
+T.persist()
+Seeds.persist()
+seed_time = time.time()
+ #time of seed prop
+prop_time = time.time()
+T_prop = Seed_Propragation_lite(T, Seeds)
+T_prop.collect()
 
 end = time.time()
-print("Time employed: %f" % (end - init))
+print("Time SeedProp: %f" % (end - prop_time))
+print("Time employed: %f" % (seed_time - init))
