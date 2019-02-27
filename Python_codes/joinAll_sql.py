@@ -119,23 +119,26 @@ def cracker(G):
     return Seeds.count() #only count so it is easier to know the result
 
 #-------------Seed Propagation: without broadcasting----------
-def seedPropagation(Tree, Seeds):
-    n = 0
-    T_seed = Tree.join(Seeds, Tree.Parent == Seeds.Node, how= "left").select(col("Child").alias("Node"), col("Node").alias("Seed"))
-    Seeds = Seeds.select(Seeds.Node, Seeds.Node)
-    while T_seed.filter(T_seed.Seed.isNull()).count() != 0:
-        n += 1
-        Seeds = T_seed.filter(T_seed.Seed.isNotNull()).union(Seeds)
-        T_seed = Tree.join(Seeds, Tree.Parent == Seeds.Node, how= "left").select(col("Child").alias("Node"), col("Seed"))
 
-    return T_seed
-
+def Seed_Propagation_lite(Tree, Seeds):
+    T_seed = Tree.join(Seeds, Tree.Parent == Seeds.Node, how = "left")
+    
+    needProp = T_seed.filter(T_seed.Node.isNull()).select("Parent", "Child")
+    noProp = T_seed.filter(T_seed.Node.isNotNull()).select(col("Parent").alias("Seed"), col("Child").alias("Node"))
+    
+    result = noProp
+    while needProp.count() != 0:
+        T_seed = needProp.join(noProp, needProp.Parent == noProp.Node, how = "left")
+        
+        noProp = T_seed.filter(T_seed.Seed.isNotNull() ).select("Seed", col("Child").alias("Node"))
+        needProp = T_seed.filter(T_seed.Seed.isNull() ).select("Parent", "Child")
+        result = result.union(noProp)
+    return result.select("Node", "Seed")
 
 #------------Running the code-----------------------
-
 init = time.time()
 
-data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_120MB_int.txt")
+data_raw = sc.textFile("hdfs:///user/hadoop/wc/input/GRAF_2MB_int.txt")
 G = data_raw.map(lambda x: x.split(',')).map(lambda x: (int(x[0]), int(x[1]))).flatMap(lambda x: [x, (x[1], x[0])]).groupByKey().mapValues(lambda x: list(set(x)))
 
 #debug dataset
@@ -149,7 +152,7 @@ dfG.count()
 
 #Cracker with findSeeds
 Tree, Seeds = cracker(dfG)
-print("Num of CC is:", Seeds.count())
+print(Seeds.show())
 seed_time = time.time()
 #do we need persist here?
 prop_time = time.time()
